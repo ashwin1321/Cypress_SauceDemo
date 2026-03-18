@@ -1,25 +1,32 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import appData from "../fixtures/app.json";
+import LoginPage from "../pages/LoginPage";
+import InventoryPage from "../pages/inventoryPage";
+
+
+Cypress.Commands.add("visitApp", () => {
+	return cy.visit("/");
+});
+
+
+Cypress.Commands.add("login", (username, password) => {
+	const loginPage = new LoginPage();
+	const user = username ?? Cypress.env('username');
+	const pass = password ?? Cypress.env('password');
+	if (!user || !pass) {
+		throw new Error('Missing credentials: call cy.login(user, pass) or set CYPRESS_username and CYPRESS_password in environment/.env');
+	}
+	return cy
+		.get(loginPage.uname).clear().type(user)
+		.get(loginPage.password).clear().type(pass)
+		.get(loginPage.loginButton).click();
+});
+
+// Assert we're on the inventory page and header is visible
+Cypress.Commands.add("assertOnInventory", () => {
+	const inventoryPage = new InventoryPage();
+	const inventoryUrl = appData.inventoryUrl;
+	const headerText = appData.headerText;
+	return cy
+		.url().should("include", inventoryUrl)
+		.get(inventoryPage.headerLabel).should("have.text", headerText);
+});

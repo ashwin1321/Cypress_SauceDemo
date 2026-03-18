@@ -5,6 +5,7 @@
     "headless": "npx cypress run"
   },
   "dependencies": {
-    "cypress": "^15.8.1"
+    "cypress": "^15.8.1",
+    "dotenv": "^17.3.1"
   }
 }
