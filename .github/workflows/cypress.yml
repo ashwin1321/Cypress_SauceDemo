@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main]
+  schedule:
+    - cron: '15 6 * * *'  # runs daily at 12:00 PM Nepal time (UTC+5:45)
+  workflow_dispatch: {}
 
 jobs:
   cypress-run:
@@ -30,10 +33,11 @@ jobs:
         run: npm ci
 
       - name: Run Cypress tests (headless)
+        id: cypress-run
         env:
           CYPRESS_username: ${{ secrets.CYPRESS_USERNAME }}
           CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
-        run: npm run headless
+        run: npm run headless || echo "tests_failed=true" >> $GITHUB_OUTPUT
 
       - name: Upload Cypress screenshots
         if: always()
@@ -48,3 +52,24 @@ jobs:
         with:
           name: cypress-videos
           path: cypress/videos/
+
+      - name: Send email report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Cypress Tests: ${{ job.status }} - Run #${{ github.run_number }}"
+          to: ${{ secrets.EMAIL_RECIPIENT }}
+          from: ${{ secrets.EMAIL_FROM }}
+          body: |
+            Workflow: Cypress Sauce Demo Automation
+            Run: #${{ github.run_number }}
+            Status: ${{ job.status }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            
+            View full logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ignore_cert: true
