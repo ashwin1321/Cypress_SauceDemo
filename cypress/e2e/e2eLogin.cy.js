@@ -14,7 +14,7 @@ describe("Scenario 1: Login to the Application", () => {
         cy.visitApp();
         cy.login("invalid_user", "invalid_pass");
         cy
-            .get(loginPage.errorMessage)
+            .get(loginPage.errorMessageLocator)
             .should('be.visible')
             .and('contain.text', appData.loginErrorMessage);
     });
@@ -23,7 +23,7 @@ describe("Scenario 1: Login to the Application", () => {
         cy.visitApp();
         cy.login("", "");
         cy
-            .get(loginPage.errorMessage)
+            .get(loginPage.errorMessageLocator)
             .should('be.visible')
             .and('contain.text', appData.loginErrorMessageEmptyFields);
     });
@@ -32,7 +32,7 @@ describe("Scenario 1: Login to the Application", () => {
         cy.visitApp();
         cy.login("", "some_password");
         cy
-            .get(loginPage.errorMessage)
+            .get(loginPage.errorMessageLocator)
             .should('be.visible')
             .and('contain.text', appData.loginErrorMessageEmptyFields);
     });
@@ -41,8 +41,16 @@ describe("Scenario 1: Login to the Application", () => {
         cy.visitApp();
         cy.login("some_username", "");
         cy
-            .get(loginPage.errorMessage)
+            .get(loginPage.errorMessageLocator)
             .should('be.visible')
             .and('contain.text', appData.loginErrorMessageEmptyPassword);
+    });
+
+    it("Test 6: Verify redirection to login when accessing Inventory without authentication", () => {
+        cy.visit("/inventory.html",  { failOnStatusCode: false });
+        cy
+            .get(loginPage.errorMessageLocator)
+            .should('be.visible')
+            .and('contain.text', appData.unauthorizedLoginMessage);
     });
 });

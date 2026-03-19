@@ -3,5 +3,6 @@
   "inventoryUrl": "/inventory",
   "loginErrorMessage": "Username and password do not match any user in this service",
   "loginErrorMessageEmptyFields": "Username is required",
-  "loginErrorMessageEmptyPassword": "Password is required"
+  "loginErrorMessageEmptyPassword": "Password is required",
+  "unauthorizedLoginMessage": "You can only access '/inventory.html' when you are logged in."
 }

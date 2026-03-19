@@ -5,6 +5,6 @@ export default class LoginPage {
         this.uname = "#user-name";
         this.password = "#password";
         this.loginButton = "#login-button";
-        this.errorMessage = ".error-message-container.error";
+        this.errorMessageLocator = ".error-message-container.error";
     }
 }
