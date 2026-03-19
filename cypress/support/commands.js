@@ -12,13 +12,26 @@ Cypress.Commands.add("login", (username, password) => {
 	const loginPage = new LoginPage();
 	const user = username ?? Cypress.env('username');
 	const pass = password ?? Cypress.env('password');
-	if (!user || !pass) {
-		throw new Error('Missing credentials: call cy.login(user, pass) or set CYPRESS_username and CYPRESS_password in environment/.env');
-	}
+	// if (!user || !pass) {
+	// 	throw new Error('Missing credentials: call cy.login(user, pass) or set CYPRESS_username and CYPRESS_password in environment/.env');
+	// }
+	if(user && pass) {
 	return cy
 		.get(loginPage.uname).clear().type(user)
 		.get(loginPage.password).clear().type(pass)
 		.get(loginPage.loginButton).click();
+	} else if (user && !pass) {
+		return cy
+			.get(loginPage.uname).clear().type(user)
+			.get(loginPage.loginButton).click();
+	} else if (!user && pass) {
+		return cy
+			.get(loginPage.password).clear().type(pass)
+			.get(loginPage.loginButton).click();
+	} else {
+		return cy
+			.get(loginPage.loginButton).click();
+	}
 });
 
 // Assert we're on the inventory page and header is visible

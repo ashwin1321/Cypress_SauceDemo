@@ -18,4 +18,31 @@ describe("Scenario 1: Login to the Application", () => {
             .should('be.visible')
             .and('contain.text', appData.loginErrorMessage);
     });
+
+    it("Test 3: Invalid Login with Empty Credentials", () => {
+        cy.visitApp();
+        cy.login("", "");
+        cy
+            .get(loginPage.errorMessage)
+            .should('be.visible')
+            .and('contain.text', appData.loginErrorMessageEmptyFields);
+    });
+
+    it("Test 4: Invalid Login with Empty Username", () => {
+        cy.visitApp();
+        cy.login("", "some_password");
+        cy
+            .get(loginPage.errorMessage)
+            .should('be.visible')
+            .and('contain.text', appData.loginErrorMessageEmptyFields);
+    });
+
+    it("Test 5: Invalid Login with Empty Password", () => {
+        cy.visitApp();
+        cy.login("some_username", "");
+        cy
+            .get(loginPage.errorMessage)
+            .should('be.visible')
+            .and('contain.text', appData.loginErrorMessageEmptyPassword);
+    });
 });

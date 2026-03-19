@@ -1,5 +1,7 @@
 {
   "headerText": "Swag Labs",
   "inventoryUrl": "/inventory",
-  "loginErrorMessage": "Username and password do not match any user in this service"
+  "loginErrorMessage": "Username and password do not match any user in this service",
+  "loginErrorMessageEmptyFields": "Username is required",
+  "loginErrorMessageEmptyPassword": "Password is required"
 }
