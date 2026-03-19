@@ -1,8 +1,10 @@
 {
   "headerText": "Swag Labs",
-  "inventoryUrl": "/inventory",
+  "inventoryUrl": "/inventory.html",
   "loginErrorMessage": "Username and password do not match any user in this service",
   "loginErrorMessageEmptyFields": "Username is required",
   "loginErrorMessageEmptyPassword": "Password is required",
-  "unauthorizedLoginMessage": "You can only access '/inventory.html' when you are logged in."
+  "unauthorizedLoginMessage": "You can only access '/inventory.html' when you are logged in.",
+  "randomUsername": "randomUser",
+  "randomPassword": "randomPass123"
 }

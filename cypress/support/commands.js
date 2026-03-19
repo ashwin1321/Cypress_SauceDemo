@@ -43,3 +43,11 @@ Cypress.Commands.add("assertOnInventory", () => {
 		.url().should("include", inventoryUrl)
 		.get(inventoryPage.headerLabel).should("have.text", headerText);
 });
+
+Cypress.Commands.add("shouldBeVisible", { prevSubject: 'element' }, (subject) => {
+	return cy.wrap(subject).should('be.visible');
+});
+
+Cypress.Commands.add("shouldContainText", { prevSubject: 'element' }, (subject, expectedText) => {
+	return cy.wrap(subject).should('contain.text', expectedText);
+});
