@@ -2,5 +2,8 @@ node_modules
 
 # Local environment file (do not commit)
 .env
+.env.qa
+.env.uat
+.env.prod
 
 allure-results
