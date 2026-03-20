@@ -1,4 +1,4 @@
-// const { defineConfig } = require("cypress");
+import { allureCypress } from "allure-cypress/reporter";
 import { defineConfig } from "cypress";
 import dotenv from "dotenv";
 
@@ -9,6 +9,9 @@ module.exports = defineConfig({
     baseUrl: "https://www.saucedemo.com/",
     setupNodeEvents(on, config) {
       // implement node event listeners here
+      allureCypress(on, config, {
+        resultsDir: "allure-results",
+      });
       return config;
     },
   },

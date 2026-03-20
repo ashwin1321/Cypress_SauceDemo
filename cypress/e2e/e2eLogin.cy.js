@@ -1,5 +1,6 @@
 import LoginPage from "../pages/LoginPage.js"
 import appData from "../fixtures/app.json";
+import "allure-cypress";
 
 let loginPage = new LoginPage();
 
