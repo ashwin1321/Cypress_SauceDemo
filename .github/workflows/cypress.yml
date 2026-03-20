@@ -81,6 +81,12 @@
             github_token: ${{ secrets.GITHUB_TOKEN }}
             publish_dir: ./allure-report
             publish_branch: gh-pages
+        
+        - name: Debug report folder
+          if: always()  
+          run: |
+            echo "==== ALLURE REPORT ===="
+            ls -R allure-report || echo "No report generated"
 
         - name: Send email report
           if: always()
