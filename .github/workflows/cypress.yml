@@ -68,7 +68,6 @@ jobs:
             allure generate allure-results --clean -o allure-report
           else
             echo "No allure results found, skipping report generation"
-            mkdir -p allure-report
           fi
 
       # Debug: check report folder
