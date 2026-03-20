@@ -1,7 +1,9 @@
 name: Cypress Tests
 
 permissions:
-  contents: write  # Required for GitHub Pages deployment
+  contents: write
+  pages: write
+  id-token: write
 
 on:
   push:
@@ -15,6 +17,8 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
+    outputs:
+      tests_failed: ${{ steps.cypress-run.outputs.tests_failed }}
 
     steps:
       # Checkout code
@@ -70,22 +74,14 @@ jobs:
             echo "No allure results found, skipping report generation"
           fi
 
-      # Debug: check report folder
-      - name: Debug report folder
-        if: always()  
-        run: |
-          echo "==== ALLURE REPORT ===="
-          ls -R allure-report || echo "No report generated"
-
-      # Upload Allure report as artifact
-      - name: Upload Allure report
+      # Upload Allure report as artifact for the deploy job
+      - name: Upload Allure report artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: allure-report
           path: allure-report/
 
-      # Upload Cypress screenshots
+      # Upload Cypress screenshots (regular artifact)
       - name: Upload Cypress screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -93,7 +89,7 @@ jobs:
           name: cypress-screenshots
           path: cypress/screenshots/
 
-      # Upload Cypress videos
+      # Upload Cypress videos (regular artifact)
       - name: Upload Cypress videos
         if: always()
         uses: actions/upload-artifact@v4
@@ -101,36 +97,47 @@ jobs:
           name: cypress-videos
           path: cypress/videos/
 
-      # Deploy Allure report to GitHub Pages (clean every run)
-      - name: Deploy Allure report to GitHub Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
-          publish_branch: gh-pages
+  deploy:
+    needs: cypress-run
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
-      # Send email report
+  send-email:
+    needs: [cypress-run, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
       - name: Send email report
-        if: always()
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "Cypress Tests: ${{ job.status }} - Run #${{ github.run_number }}"
+          subject: "Cypress Tests: ${{ needs.cypress-run.result }} - Run #${{ github.run_number }}"
           to: ${{ secrets.EMAIL_RECIPIENT }}
           from: ${{ secrets.EMAIL_FROM }}
           body: |
             Workflow: Cypress Sauce Demo Automation
             Run: #${{ github.run_number }}
-            Status: ${{ job.status }}
+            Status: ${{ needs.cypress-run.result }}
             Branch: ${{ github.ref }}
             Commit: ${{ github.sha }}
 
-            Allure Report (if deployed):
-            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+            Allure Report Deployed:
+            ${{ needs.deploy.outputs.page_url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
 
             View full logs:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
