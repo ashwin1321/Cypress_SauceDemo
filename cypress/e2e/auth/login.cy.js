@@ -10,7 +10,7 @@ describe("Scenario 1: Login Functionality", () => {
         cy.visitApp();
     });
 
-    it.only("TC 1.1: should login successfully with valid credentials", () => {
+    it("TC 1.1: should login successfully with valid credentials", () => {
         cy.login();
         cy.assertOnInventory();
     });

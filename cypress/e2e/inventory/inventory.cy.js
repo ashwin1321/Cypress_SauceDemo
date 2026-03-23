@@ -103,7 +103,7 @@ describe.only("Scenario 2: Inventory Page Test Cases", () => {
         .shouldContainText(inventoryItems[0].name);
     });
 
-    it.only("TC 2.12: Verify that number of items in the cart is displayed correctly on the inventory page", () => {
+    it("TC 2.12: Verify that number of items in the cart is displayed correctly on the inventory page", () => {
         cy.get(inventoryPage.inventoryItem).first().within(() => {
             cy.get(appData.button).shouldContainText(appData.addToCartButton).click();
         });
