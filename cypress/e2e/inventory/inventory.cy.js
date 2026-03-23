@@ -94,12 +94,21 @@ describe.only("Scenario 2: Inventory Page Test Cases", () => {
         cy.shouldIncludeUrl(appData.cartUrl);
     });
 
-    it.only("TC 2.11: Verify that the user can navigate to the product details page from the inventory page", () => {
+    it("TC 2.11: Verify that the user can navigate to the product details page from the inventory page", () => {
         cy.get(inventoryPage.inventoryItem).first().within(() => {
             cy.get(inventoryPage.itemName).shouldBeVisible().click();
         });
         cy.get(inventoryPage.productName)
         .shouldBeVisible()
         .shouldContainText(inventoryItems[0].name);
+    });
+
+    it.only("TC 2.12: Verify that number of items in the cart is displayed correctly on the inventory page", () => {
+        cy.get(inventoryPage.inventoryItem).first().within(() => {
+            cy.get(appData.button).shouldContainText(appData.addToCartButton).click();
+        });
+        cy.get(inventoryPage.cartIcon)
+            .shouldBeVisible()
+            .shouldContainText("1");
     });
 });
