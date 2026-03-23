@@ -8,5 +8,9 @@
   "randomUsername": "randomUser",
   "randomPassword": "randomPass123",
   "lockedOutUsername": "locked_out_user",
-  "lockedOutErrorMessage": "Sorry, this user has been locked out."
+  "lockedOutErrorMessage": "Sorry, this user has been locked out.",
+  "button": "button",
+  "addToCartButton": "Add to cart",
+  "removeButton": "Remove",
+  "cartUrl": "/cart.html"
 }
