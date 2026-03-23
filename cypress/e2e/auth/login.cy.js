@@ -4,15 +4,18 @@ import "allure-cypress";
 
 let loginPage = new LoginPage();
 
-describe("Scenario 1: Login to the Application", () => {
-    it("Test 1: Valid Login", () => {
+describe("Scenario 1: Login Functionality", () => {
+
+    beforeEach(() => {
         cy.visitApp();
+    });
+
+    it("Test 1: should login successfully with valid credentials", () => {
         cy.login();
         cy.assertOnInventory();
     });
 
-    it("Test 2: Invalid Login with Invalid Credentials", () => {
-        cy.visitApp();
+    it("Test 2: should display error for invalid credentials", () => {
         cy.login(appData.randomUsername, appData.randomPassword);
         cy
             .get(loginPage.errorMessageLocator)
@@ -20,8 +23,7 @@ describe("Scenario 1: Login to the Application", () => {
             .shouldContainText(appData.loginErrorMessage);
     });
 
-    it("Test 3: Invalid Login with Empty Credentials", () => {
-        cy.visitApp();
+    it("Test 3: should display error for empty credentials", () => {
         cy.login("", "");
         cy
             .get(loginPage.errorMessageLocator)
@@ -29,8 +31,7 @@ describe("Scenario 1: Login to the Application", () => {
             .shouldContainText(appData.loginErrorMessageEmptyFields);
     });
 
-    it("Test 4: Invalid Login with Empty Username", () => {
-        cy.visitApp();
+    it("Test 4: should display error for empty username", () => {
         cy.login("", appData.randomPassword);
         cy
             .get(loginPage.errorMessageLocator)
@@ -38,8 +39,7 @@ describe("Scenario 1: Login to the Application", () => {
             .shouldContainText(appData.loginErrorMessageEmptyFields);
     });
 
-    it("Test 5: Invalid Login with Empty Password", () => {
-        cy.visitApp();
+    it("Test 5: should display error for empty password", () => {
         cy.login(appData.randomUsername, "");
         cy
             .get(loginPage.errorMessageLocator)
@@ -55,8 +55,7 @@ describe("Scenario 1: Login to the Application", () => {
             .shouldContainText(appData.unauthorizedLoginMessage);
     });
 
-    it("Test 7: Verify error message for locked out user", () => {
-        cy.visitApp();
+    it("Test 7: should prevent login for locked out user", () => {
         cy.login(appData.lockedOutUsername, Cypress.env('password'));
         cy
             .get(loginPage.errorMessageLocator)
