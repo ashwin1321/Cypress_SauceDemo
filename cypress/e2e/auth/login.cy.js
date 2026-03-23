@@ -1,5 +1,5 @@
-import LoginPage from "../pages/LoginPage.js"
-import appData from "../fixtures/app.json";
+import LoginPage from "../../pages/LoginPage.js"
+import appData from "../../fixtures/app.json";
 import "allure-cypress";
 
 let loginPage = new LoginPage();
@@ -53,5 +53,14 @@ describe("Scenario 1: Login to the Application", () => {
             .get(loginPage.errorMessageLocator)
             .shouldBeVisible()
             .shouldContainText(appData.unauthorizedLoginMessage);
+    });
+
+    it("Test 7: Verify error message for locked out user", () => {
+        cy.visitApp();
+        cy.login(appData.lockedOutUsername, Cypress.env('password'));
+        cy
+            .get(loginPage.errorMessageLocator)
+            .shouldBeVisible()
+            .shouldContainText(appData.lockedOutErrorMessage);
     });
 });

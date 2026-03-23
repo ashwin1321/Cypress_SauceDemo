@@ -6,5 +6,7 @@
   "loginErrorMessageEmptyPassword": "Password is required",
   "unauthorizedLoginMessage": "You can only access '/inventory.html' when you are logged in.",
   "randomUsername": "randomUser",
-  "randomPassword": "randomPass123"
+  "randomPassword": "randomPass123",
+  "lockedOutUsername": "locked_out_user",
+  "lockedOutErrorMessage": "Sorry, this user has been locked out."
 }
