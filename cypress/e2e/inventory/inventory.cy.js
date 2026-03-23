@@ -2,6 +2,7 @@ import InventoryPage from "../../pages/inventoryPage";
 import inventoryItems from "../../fixtures/inventoryItemsData.json";
 import appData from "../../fixtures/appData.json";
 import { verifyAscendingSort, verifyDescendingSort } from "../../utils/sortUtils";
+import "allure-cypress";
 
 const inventoryPage = new InventoryPage();
 
