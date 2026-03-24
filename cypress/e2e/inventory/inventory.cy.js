@@ -6,7 +6,7 @@ import "allure-cypress";
 
 const inventoryPage = new InventoryPage();
 
-describe.only("Scenario 2: Inventory Page Test Cases", () => {
+describe("Scenario 2: Inventory Page Test Cases", () => {
 
     beforeEach(() => {
         cy.visitApp();
