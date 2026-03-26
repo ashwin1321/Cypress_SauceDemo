@@ -14,6 +14,8 @@ export default class InventoryPage {
         this.itemName = ".inventory_item_name"
         this.cartIcon = "[data-test='shopping-cart-link']"
         this.productName = "[data-test='inventory-item-name']"
+        this.menuButton = "#react-burger-menu-btn"
+        this.logoutButton = "#logout_sidebar_link"
     }
 
     getPricesFromInventory() {

@@ -1,10 +1,12 @@
 import InventoryPage from "../../pages/inventoryPage";
+import LoginPage from "../../pages/LoginPage";
 import inventoryItems from "../../fixtures/inventoryItemsData.json";
 import appData from "../../fixtures/appData.json";
 import { verifyAscendingSort, verifyDescendingSort } from "../../utils/sortUtils";
 import "allure-cypress";
 
 const inventoryPage = new InventoryPage();
+const loginPage = new LoginPage();
 
 describe("Scenario 2: Inventory Page Test Cases", () => {
 
@@ -111,5 +113,27 @@ describe("Scenario 2: Inventory Page Test Cases", () => {
         cy.get(inventoryPage.cartIcon)
             .shouldBeVisible()
             .shouldContainText("1");
+    });
+
+    it("TC 2.13: Verify that number of items in the cart is displayed correctly on the inventory page after removing items", () => {
+        cy.get(inventoryPage.inventoryItem).first().within(() => {
+            cy.get(appData.button).shouldContainText(appData.addToCartButton).click();
+        });
+        cy.get(inventoryPage.cartIcon)
+            .shouldBeVisible()
+            .shouldContainText("1");
+        
+        cy.get(inventoryPage.inventoryItem).first().within(() => {
+            cy.get(appData.button).shouldContainText(appData.removeButton).click();
+        });
+        cy.get(inventoryPage.cartIcon)
+            .shouldBeVisible()
+            .shouldNotContainText("1");
+    });
+
+    it.only("TC 2.14: Verify that the user can log out from the inventory page", () => {
+        cy.get(inventoryPage.menuButton).shouldBeVisible().click();
+        cy.get(inventoryPage.logoutButton).shouldBeVisible().click();
+        cy.get(loginPage.loginButton).shouldBeVisible();
     });
 });

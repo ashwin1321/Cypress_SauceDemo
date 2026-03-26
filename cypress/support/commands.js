@@ -54,6 +54,10 @@ Cypress.Commands.add("shouldContainText", { prevSubject: 'element' }, (subject, 
 	return cy.wrap(subject).should('contain.text', expectedText);
 });
 
+Cypress.Commands.add("shouldNotContainText", { prevSubject: 'element' }, (subject, expectedText) => {
+	return cy.wrap(subject).should('not.contain.text', expectedText);
+});
+
 Cypress.Commands.add("shouldHaveLength", { prevSubject: 'element' }, (subject, expectedLength) => {
 	return cy.wrap(subject).should('have.length', expectedLength);
 });
