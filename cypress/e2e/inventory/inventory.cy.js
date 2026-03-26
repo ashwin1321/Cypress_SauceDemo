@@ -131,7 +131,7 @@ describe("Scenario 2: Inventory Page Test Cases", () => {
             .shouldNotContainText("1");
     });
 
-    it.only("TC 2.14: Verify that the user can log out from the inventory page", () => {
+    it("TC 2.14: Verify that the user can log out from the inventory page", () => {
         cy.get(inventoryPage.menuButton).shouldBeVisible().click();
         cy.get(inventoryPage.logoutButton).shouldBeVisible().click();
         cy.get(loginPage.loginButton).shouldBeVisible();
