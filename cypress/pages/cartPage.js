@@ -17,5 +17,6 @@ export default class cartPage {
         this.checkoutCancelButton = '[data-test="cancel"]'
         this.backHomeButton = '[data-test="back-to-products"]'
         this.checkoutCompleteUrl = "/checkout-complete.html"
+        this.checkoutErrorMessage = '[data-test="error"]'
     }
 }
