@@ -136,4 +136,18 @@ describe("Scenario 2: Inventory Page Test Cases", () => {
         cy.get(inventoryPage.logoutButton).shouldBeVisible().click();
         cy.get(loginPage.loginButton).shouldBeVisible();
     });
+
+    it.only("TC 2.15: Verify that user can drill down to product details and add product to cart from there", () => {
+        cy.get(inventoryPage.inventoryItem).first().within(() => {
+            cy.get(inventoryPage.itemName).shouldBeVisible().click();
+        });
+        cy.get(inventoryPage.productName)
+        .shouldBeVisible()
+        .shouldContainText(inventoryItems[0].name);
+
+        cy.get(inventoryPage.addToCartButton).shouldBeVisible().click();
+        cy.get(inventoryPage.cartIcon)
+            .shouldBeVisible()
+            .shouldContainText("1");
+    });
 });
