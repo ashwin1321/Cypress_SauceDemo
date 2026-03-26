@@ -2,6 +2,7 @@ import appData from "../fixtures/appData.json";
 import LoginPage from "../pages/LoginPage";
 import InventoryPage from "../pages/inventoryPage";
 import CartPage from "../pages/cartPage";
+import inventoryItems from "../fixtures/inventoryItemsData.json";
 
 const loginPage = new LoginPage();
 const inventoryPage = new InventoryPage();
@@ -88,6 +89,82 @@ Cypress.Commands.add("checkoutStepTwo", () => {
 Cypress.Commands.add("checkoutComplete", () => {
 	cy.clickButton(cartPage.backHomeButton);
 	cy.shouldIncludeUrl(inventoryPage.inventoryUrl);
+});
+
+Cypress.Commands.add("sortProducts", (sortOption, sortingOrder, sortType) => {
+	cy.get(inventoryPage.selectDropdown)
+		.shouldBeVisible()
+		.select(sortOption)
+
+	if (sortType === "price") {
+		inventoryPage.getPricesFromInventory().then(prices => {
+			sortingOrder(prices)
+		});
+	} else if (sortType === "name") {
+		inventoryPage.getNamesFromInventory().then(names => {
+			sortingOrder(names)
+		});
+	}
+});
+
+Cypress.Commands.add("addFirstItemToCart", () => {
+	cy.get(inventoryPage.inventoryItem).first().within(() => {
+		cy.get(appData.button).shouldContainText(appData.addToCartButton).click();
+	});
+	cy.get(inventoryPage.cartIcon)
+		.shouldBeVisible()
+		.shouldContainText("1");
+});
+
+Cypress.Commands.add("removeOneItemFromCart", () => {
+	cy.get(inventoryPage.inventoryItem).first().within(() => {
+		cy.get(appData.button).shouldContainText(appData.removeButton).click();
+	});
+	cy.get(inventoryPage.cartIcon)
+		.shouldBeVisible()
+		.shouldNotContainText("1");
+});
+
+Cypress.Commands.add("addItemToCart", () => {
+	cy.clickButton(inventoryPage.addToCartButton);
+	cy.get(inventoryPage.cartIcon)
+		.shouldBeVisible()
+		.invoke('text')
+		.should((text) => {
+			const count = parseInt(text.trim(), 10);
+			expect(count).to.be.greaterThan(0);
+		});
+});
+
+Cypress.Commands.add("drillDownToFirstProductDetails", () => {
+	cy.get(inventoryPage.inventoryItem).first().within(() => {
+		cy.clickButton(inventoryPage.itemName);
+	});
+	cy.get(inventoryPage.productName)
+		.shouldBeVisible()
+		.shouldContainText(inventoryItems[0].name);
+});
+
+Cypress.Commands.add("logout", () => {
+	cy.clickButton(inventoryPage.menuButton);
+	cy.clickButton(inventoryPage.logoutButton);
+	cy.get(loginPage.loginButton).shouldBeVisible();
+});
+
+Cypress.Commands.add("openCartPage", () => {
+	cy.clickButton(inventoryPage.cartIcon);
+	cy.shouldIncludeUrl(cartPage.cartUrl);
+})
+
+Cypress.Commands.add("cancelCheckout", () => {
+	cy.clickButton(cartPage.checkoutCancelButton);
+
+	cy.url().should((url) => {
+		expect(
+			url.includes(inventoryPage.inventoryUrl) ||
+			url.includes(cartPage.cartUrl)
+		).to.be.true;
+	});
 });
 
 Cypress.Commands.add("shouldBeVisible", { prevSubject: 'element' }, (subject) => {

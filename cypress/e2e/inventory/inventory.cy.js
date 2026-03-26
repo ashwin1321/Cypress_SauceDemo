@@ -20,134 +20,57 @@ describe("Scenario 2: Inventory Page Test Cases", () => {
     });
 
     it("TC 2.2: Verify that the correct number of products are displayed on the inventory page", () => {
-        cy.get(inventoryPage.inventoryContainer)
-            .shouldBeVisible()
-            .find(inventoryPage.inventoryItem)
-            .shouldHaveLength(inventoryItems.length);
+       inventoryPage.verifyCorrectNumberOfProducts();
     });
 
 
     it("TC 2.3: Verify that the sort dropdown is visible and functional", () => {
-        cy.get(inventoryPage.selectDropdown)
-            .shouldBeVisible()
-            .shouldBeEnabled();
+        cy.get(inventoryPage.selectDropdown).shouldBeVisible().shouldBeEnabled();
     });
 
     it("TC 2.4: Verify that the sorted products are displayed correctly when sorting by price (low to high)", () => {
-        cy.get(inventoryPage.selectDropdown)
-            .shouldBeVisible()
-            .select(inventoryPage.dropdownLowToHigh)
-
-        inventoryPage.getPricesFromInventory().then(prices => {
-            verifyAscendingSort(prices)
-        });
+        cy.sortProducts(inventoryPage.dropdownLowToHigh, verifyAscendingSort, "price");
     });
 
     it("TC 2.5: Verify that the sorted products are displayed correctly when sorting by price (high to low)", () => {
-        cy.get(inventoryPage.selectDropdown)
-            .shouldBeVisible()
-            .select(inventoryPage.dropdownHighToLow)
-
-        inventoryPage.getPricesFromInventory().then(prices => {
-            verifyDescendingSort(prices)
-        })
+        cy.sortProducts(inventoryPage.dropdownHighToLow, verifyDescendingSort, "price");
     });
 
     it("TC 2.6: Verify that the sorted products are displayed correctly when sorting by name (A to Z)", () => {
-        cy.get(inventoryPage.selectDropdown)
-            .shouldBeVisible()
-            .select(inventoryPage.dropdownAZ)
-
-        inventoryPage.getNamesFromInventory().then(names => {
-            verifyAscendingSort(names)
-        })
+        cy.sortProducts(inventoryPage.dropdownAZ, verifyAscendingSort, "name");
     });
 
     it("TC 2.7: Verify that the sorted products are displayed correctly when sorting by name (Z to A)", () => {
-        cy.get(inventoryPage.selectDropdown)
-            .shouldBeVisible()
-            .select(inventoryPage.dropdownZA)
-
-        inventoryPage.getNamesFromInventory().then(names => {
-            verifyDescendingSort(names)
-        })
+        cy.sortProducts(inventoryPage.dropdownZA, verifyDescendingSort, "name");
     });
 
     it("TC 2.8: Verify that the inventory Page Items are displayed with correct name and price", () => {
-        cy.get(inventoryPage.inventoryItem).each((item, index) => {
-            cy.wrap(item)
-                .find(inventoryPage.itemName)
-                .shouldContainText(inventoryItems[index].name);
-
-            cy.wrap(item)
-                .find(inventoryPage.itemPrice)
-                .shouldContainText(inventoryItems[index].price);
-        });
+       inventoryPage.VerifyInventoryItemsWithCorrectNameAndPrice();
     });
 
-    it("TC 2.9: Verify that the user can add items to the cart from the inventory page and remove them", () => {
-        cy.get(inventoryPage.inventoryItem).first().within(() => {
-            cy.get(appData.button).shouldContainText(appData.addToCartButton).click();
-            cy.get(appData.button).shouldContainText(appData.removeButton);
-        });
+    it("TC 2.9: Verify that the user can navigate to the cart page from the inventory page", () => {
+        cy.openCartPage();
     });
 
-    it("TC 2.10: Verify that the user can navigate to the cart page from the inventory page", () => {
-        cy.get(inventoryPage.cartIcon).shouldBeVisible().click();
-        cy.shouldIncludeUrl(appData.cartUrl);
+    it("TC 2.10: Verify that the user can navigate to the product details page from the inventory page", () => {
+        cy.drillDownToFirstProductDetails();
     });
 
-    it("TC 2.11: Verify that the user can navigate to the product details page from the inventory page", () => {
-        cy.get(inventoryPage.inventoryItem).first().within(() => {
-            cy.get(inventoryPage.itemName).shouldBeVisible().click();
-        });
-        cy.get(inventoryPage.productName)
-        .shouldBeVisible()
-        .shouldContainText(inventoryItems[0].name);
+    it("TC 2.11: Verify that number of items in the cart is displayed correctly on the inventory page", () => {
+        cy.addFirstItemToCart();
     });
 
-    it("TC 2.12: Verify that number of items in the cart is displayed correctly on the inventory page", () => {
-        cy.get(inventoryPage.inventoryItem).first().within(() => {
-            cy.get(appData.button).shouldContainText(appData.addToCartButton).click();
-        });
-        cy.get(inventoryPage.cartIcon)
-            .shouldBeVisible()
-            .shouldContainText("1");
+    it("TC 2.12: Verify that number of items in the cart is displayed correctly on the inventory page after removing items", () => {
+        cy.addFirstItemToCart();
+        cy.removeOneItemFromCart();
     });
 
-    it("TC 2.13: Verify that number of items in the cart is displayed correctly on the inventory page after removing items", () => {
-        cy.get(inventoryPage.inventoryItem).first().within(() => {
-            cy.get(appData.button).shouldContainText(appData.addToCartButton).click();
-        });
-        cy.get(inventoryPage.cartIcon)
-            .shouldBeVisible()
-            .shouldContainText("1");
-        
-        cy.get(inventoryPage.inventoryItem).first().within(() => {
-            cy.get(appData.button).shouldContainText(appData.removeButton).click();
-        });
-        cy.get(inventoryPage.cartIcon)
-            .shouldBeVisible()
-            .shouldNotContainText("1");
+    it("TC 2.13: Verify that the user can log out from the inventory page", () => {
+        cy.logout();
     });
 
-    it("TC 2.14: Verify that the user can log out from the inventory page", () => {
-        cy.get(inventoryPage.menuButton).shouldBeVisible().click();
-        cy.get(inventoryPage.logoutButton).shouldBeVisible().click();
-        cy.get(loginPage.loginButton).shouldBeVisible();
-    });
-
-    it("TC 2.15: Verify that user can drill down to product details and add product to cart from there", () => {
-        cy.get(inventoryPage.inventoryItem).first().within(() => {
-            cy.get(inventoryPage.itemName).shouldBeVisible().click();
-        });
-        cy.get(inventoryPage.productName)
-        .shouldBeVisible()
-        .shouldContainText(inventoryItems[0].name);
-
-        cy.get(inventoryPage.addToCartButton).shouldBeVisible().click();
-        cy.get(inventoryPage.cartIcon)
-            .shouldBeVisible()
-            .shouldContainText("1");
+    it("TC 2.14: Verify that user can drill down to product details and add product to cart from there", () => {
+        cy.drillDownToFirstProductDetails();
+        cy.addItemToCart();
     });
 });

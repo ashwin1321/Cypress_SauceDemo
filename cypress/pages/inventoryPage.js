@@ -1,3 +1,5 @@
+import inventoryItems from "../fixtures/inventoryItemsData.json";
+
 export default class InventoryPage {
 
     constructor() {
@@ -40,5 +42,24 @@ export default class InventoryPage {
             )
             return names
         })
+    }
+
+    VerifyInventoryItemsWithCorrectNameAndPrice() {
+        cy.get(this.inventoryItem).each((item, index) => {
+            cy.wrap(item)
+                .find(this.itemName)
+                .shouldContainText(inventoryItems[index].name);
+
+            cy.wrap(item)
+                .find(this.itemPrice)
+                .shouldContainText(inventoryItems[index].price);
+        });
+    }
+
+    verifyCorrectNumberOfProducts() {
+        cy.get(this.inventoryContainer)
+            .shouldBeVisible()
+            .find(this.inventoryItem)
+            .shouldHaveLength(inventoryItems.length);
     }
 }
