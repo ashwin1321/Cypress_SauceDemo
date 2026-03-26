@@ -17,6 +17,7 @@ export default class InventoryPage {
         this.menuButton = "#react-burger-menu-btn"
         this.logoutButton = "#logout_sidebar_link"
         this.addToCartButton = "[data-test='add-to-cart']"
+        this.inventoryUrl = "/inventory.html"
     }
 
     getPricesFromInventory() {
