@@ -167,6 +167,12 @@ Cypress.Commands.add("cancelCheckout", () => {
 	});
 });
 
+Cypress.Commands.add("shouldDisplayErrorMessageOnLogin", (errorMessage) => {
+	cy.get(loginPage.errorMessageLocator)
+		.shouldBeVisible()
+		.shouldContainText(errorMessage);
+});
+
 Cypress.Commands.add("shouldBeVisible", { prevSubject: 'element' }, (subject) => {
 	return cy.wrap(subject).should('be.visible');
 });
