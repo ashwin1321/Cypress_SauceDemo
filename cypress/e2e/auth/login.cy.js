@@ -1,8 +1,10 @@
 import LoginPage from "../../pages/LoginPage.js"
 import appData from "../../fixtures/appData.json";
+import CartPage from "../../pages/cartPage.js";
 import "allure-cypress";
 
 let loginPage = new LoginPage();
+let cartPage = new CartPage();
 
 describe("Scenario 1: Login Functionality", () => {
 
@@ -44,5 +46,12 @@ describe("Scenario 1: Login Functionality", () => {
     it("TC 1.7: should prevent login for locked out user", () => {
         cy.login(appData.lockedOutUsername, Cypress.env('password'));
         cy.shouldDisplayErrorMessageOnLogin(appData.lockedOutErrorMessage);
+    });
+
+     it("TC 0.1: should redirect to login when accessing checkout without authentication", () => {
+        cy.visit(cartPage.checkoutStepOneUrl, { failOnStatusCode: false });
+        cy.shouldNotIncludeUrl(appData.inventoryUrl);
+        cy.shouldNotIncludeUrl(cartPage.cartUrl);
+        cy.shouldDisplayErrorMessageOnLogin(appData.unauthorizedLoginMessageCart);
     });
 });

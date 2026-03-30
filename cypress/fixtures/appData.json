@@ -5,6 +5,7 @@
   "loginErrorMessageEmptyFields": "Username is required",
   "loginErrorMessageEmptyPassword": "Password is required",
   "unauthorizedLoginMessage": "You can only access '/inventory.html' when you are logged in.",
+  "unauthorizedLoginMessageCart": "You can only access '/checkout-step-one.html' when you are logged in.",
   "randomUsername": "randomUser",
   "randomPassword": "randomPass123",
   "lockedOutUsername": "locked_out_user",
