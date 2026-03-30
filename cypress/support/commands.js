@@ -201,6 +201,10 @@ Cypress.Commands.add('shouldIncludeUrl', (url) => {
 	return cy.url().should('include', url);
 });
 
+Cypress.Commands.add('shouldNotIncludeUrl', (url) => {
+	return cy.url().should('not.include', url);
+});
+
 Cypress.Commands.add('shouldNotExist', (selector) => {
 	cy.get('body').find(selector).should('not.exist');
 });
