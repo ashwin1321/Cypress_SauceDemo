@@ -1,0 +1,144 @@
+name: Sauce Demo Cypress Automation
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '15 6 * * *'  # runs daily at 12:00 PM Nepal time (UTC+5:45)
+  workflow_dispatch: {}
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    outputs:
+      tests_failed: ${{ steps.cypress-run.outputs.tests_failed }}
+
+    steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Cache npm modules
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Install Allure CLI
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline --save-dev
+
+      # Run Cypress tests (headless)
+      - name: Run Cypress tests
+        id: cypress-run
+        env:
+          CYPRESS_username: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+        run: |
+          npm run headless || echo "tests_failed=true" >> $GITHUB_OUTPUT
+
+      # Debug: check if Allure results exist
+      - name: Debug Allure results
+        if: always()
+        run: |
+          echo "==== ALLURE RESULTS ===="
+          ls -R allure-results || echo "No allure-results found"
+
+      # Generate Allure report (only if results exist)
+      - name: Generate Allure report
+        if: always()
+        run: |
+          if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
+            allure generate allure-results --clean -o allure-report
+          else
+            echo "No allure results found, skipping report generation"
+          fi
+
+      # Upload Allure report as artifact for the deploy job
+      - name: Upload Allure report artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report/
+
+      # Upload Cypress screenshots (regular artifact)
+      - name: Upload Cypress screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/
+
+      # Upload Cypress videos (regular artifact)
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos/
+
+  deploy:
+    needs: cypress-run
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  send-email:
+    needs: [cypress-run, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Cypress Tests: ${{ needs.cypress-run.result }} - Run #${{ github.run_number }}"
+          to: ${{ secrets.EMAIL_RECIPIENT }}
+          from: ${{ secrets.EMAIL_FROM }}
+          body: |
+            Workflow: Cypress Sauce Demo Automation
+            Run: #${{ github.run_number }}
+            Status: ${{ needs.cypress-run.result }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+
+            Allure Report Deployed:
+            ${{ needs.deploy.outputs.page_url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
+
+            View full logs:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ignore_cert: true
