@@ -114,31 +114,31 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  send-email:
-    needs: [cypress-run, deploy]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send email report
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "Cypress Tests: ${{ needs.cypress-run.result }} - Run #${{ github.run_number }}"
-          to: ${{ secrets.EMAIL_RECIPIENT }}
-          from: ${{ secrets.EMAIL_FROM }}
-          body: |
-            Workflow: Cypress Sauce Demo Automation
-            Run: #${{ github.run_number }}
-            Status: ${{ needs.cypress-run.result }}
-            Branch: ${{ github.ref }}
-            Commit: ${{ github.sha }}
+  # send-email:
+  #   needs: [cypress-run, deploy]
+  #   if: always()
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Send email report
+  #       uses: dawidd6/action-send-mail@v3
+  #       with:
+  #         server_address: ${{ secrets.SMTP_SERVER }}
+  #         server_port: ${{ secrets.SMTP_PORT }}
+  #         username: ${{ secrets.SMTP_USERNAME }}
+  #         password: ${{ secrets.SMTP_PASSWORD }}
+  #         subject: "Cypress Tests: ${{ needs.cypress-run.result }} - Run #${{ github.run_number }}"
+  #         to: ${{ secrets.EMAIL_RECIPIENT }}
+  #         from: ${{ secrets.EMAIL_FROM }}
+  #         body: |
+  #           Workflow: Cypress Sauce Demo Automation
+  #           Run: #${{ github.run_number }}
+  #           Status: ${{ needs.cypress-run.result }}
+  #           Branch: ${{ github.ref }}
+  #           Commit: ${{ github.sha }}
 
-            Allure Report Deployed:
-            ${{ needs.deploy.outputs.page_url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
+  #           Allure Report Deployed:
+  #           ${{ needs.deploy.outputs.page_url || format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
 
-            View full logs:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          ignore_cert: true
+  #           View full logs:
+  #           ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  #         ignore_cert: true
